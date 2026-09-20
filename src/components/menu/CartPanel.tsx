@@ -3,9 +3,9 @@ import { colors, radii } from "@/constants/theme";
 import { CartLine } from "@/types/menu";
 import { AppIcon } from "@/components/AppIcon";
 
-type Props = { lines: CartLine[]; onChangeQuantity: (id: string, delta: number) => void; onCheckout: () => void };
+type Props = { lines: CartLine[]; isPrinting: boolean; onChangeQuantity: (id: string, delta: number) => void; onCheckout: () => void };
 
-export function CartPanel({ lines, onChangeQuantity, onCheckout }: Props) {
+export function CartPanel({ lines, isPrinting, onChangeQuantity, onCheckout }: Props) {
   const subtotal = lines.reduce((sum, line) => sum + line.price * line.quantity, 0);
   const tax = subtotal * 0.0825;
   const total = subtotal + tax;
@@ -32,7 +32,7 @@ export function CartPanel({ lines, onChangeQuantity, onCheckout }: Props) {
         <View style={styles.summaryRow}><Text style={styles.summaryLabel}>Subtotal</Text><Text style={styles.summaryValue}>${subtotal.toFixed(2)}</Text></View>
         <View style={styles.summaryRow}><Text style={styles.summaryLabel}>Tax</Text><Text style={styles.summaryValue}>${tax.toFixed(2)}</Text></View>
         <View style={[styles.summaryRow, styles.totalRow]}><Text style={styles.totalLabel}>Total</Text><Text style={styles.total}>${total.toFixed(2)}</Text></View>
-        <Pressable accessibilityRole="button" disabled={!lines.length} onPress={onCheckout} style={({ pressed }) => [styles.payButton, !lines.length && styles.disabled, pressed && styles.pressed]}><Text style={styles.payText}>Charge ${total.toFixed(2)}</Text><AppIcon name={{ ios: "arrow.right", android: "arrow_forward", web: "arrow_forward" }} color={colors.surface} size={19} /></Pressable>
+        <Pressable accessibilityRole="button" disabled={!lines.length || isPrinting} onPress={onCheckout} style={({ pressed }) => [styles.payButton, (!lines.length || isPrinting) && styles.disabled, pressed && styles.pressed]}><Text style={styles.payText}>{isPrinting ? "Opening printer…" : `Charge & print $${total.toFixed(2)}`}</Text><AppIcon name={{ ios: "printer.fill", android: "print", web: "print" }} color={colors.surface} size={19} /></Pressable>
       </View>
     </View>
   );

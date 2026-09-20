@@ -7,6 +7,7 @@ A responsive React Native point-of-sale app built with Expo SDK 57 and Expo Rout
 
 - [`expo-symbols`](https://docs.expo.dev/versions/v57.0.0/sdk/symbols/) — cross-platform SF Symbols and Material Symbols.
 - [`expo-status-bar`](https://docs.expo.dev/versions/v57.0.0/sdk/status-bar/) — native status bar styling.
+- [`expo-print`](https://docs.expo.dev/versions/v57.0.0/sdk/print/) — generates an itemized receipt and opens the native Android or iOS print dialog during checkout.
 
 Expo Router is also provided by `expo-router` for file-based navigation and route parameters.
 

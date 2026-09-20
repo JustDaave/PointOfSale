@@ -5,9 +5,11 @@ import { ProductCard } from "@/components/menu/ProductCard";
 import { colors } from "@/constants/theme";
 import { categories, menuItems } from "@/data/menu";
 import { CartLine, MenuItem } from "@/types/menu";
+import { createReceiptHtml } from "@/utils/receipt";
+import * as Print from "expo-print";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useMemo, useState } from "react";
-import { Pressable, ScrollView, StyleSheet, Text, TextInput, useWindowDimensions, View } from "react-native";
+import { Alert, Pressable, ScrollView, StyleSheet, Text, TextInput, useWindowDimensions, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export function MenuScreen() {
@@ -20,6 +22,7 @@ export function MenuScreen() {
   const [category, setCategory] = useState("Popular");
   const [search, setSearch] = useState("");
   const [notice, setNotice] = useState("");
+  const [isPrinting, setIsPrinting] = useState(false);
   const [cart, setCart] = useState<CartLine[]>([
     { ...menuItems[0], quantity: 2 },
     { ...menuItems[2], quantity: 1 },
@@ -51,9 +54,19 @@ export function MenuScreen() {
       .filter((line) => line.quantity > 0));
   }
 
-  function completeOrder() {
-    setCart([]);
-    setNotice("Payment accepted — order completed.");
+  async function completeOrder() {
+    if (isPrinting || cart.length === 0) return;
+
+    setIsPrinting(true);
+    try {
+      await Print.printAsync({ html: createReceiptHtml(cart, staff || "Staff") });
+      setCart([]);
+      setNotice("Payment accepted — receipt sent to printer.");
+    } catch {
+      Alert.alert("Receipt not printed", "The order is still open. Try printing again when a printer is available.");
+    } finally {
+      setIsPrinting(false);
+    }
   }
 
   const catalog = (
@@ -91,13 +104,13 @@ export function MenuScreen() {
         <ScrollView style={styles.compactPage} contentContainerStyle={styles.compactPageContent}>
           <CategoryRail categories={categories} selected={category} horizontal onSelect={setCategory} />
           {catalog}
-          <View style={styles.compactCart}><CartPanel lines={cart} onChangeQuantity={changeQuantity} onCheckout={completeOrder} /></View>
+          <View style={styles.compactCart}><CartPanel isPrinting={isPrinting} lines={cart} onChangeQuantity={changeQuantity} onCheckout={completeOrder} /></View>
         </ScrollView>
       ) : (
         <View style={styles.workspace}>
           <View style={[styles.sidebar, { width: sidebarWidth }]}><Text style={styles.sidebarLabel}>CATEGORIES</Text><CategoryRail categories={categories} selected={category} onSelect={setCategory} /></View>
           {catalog}
-          <View style={[styles.cart, { width: cartWidth }]}><CartPanel lines={cart} onChangeQuantity={changeQuantity} onCheckout={completeOrder} /></View>
+          <View style={[styles.cart, { width: cartWidth }]}><CartPanel isPrinting={isPrinting} lines={cart} onChangeQuantity={changeQuantity} onCheckout={completeOrder} /></View>
         </View>
       )}
     </SafeAreaView>
