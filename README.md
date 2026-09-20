@@ -15,11 +15,11 @@ Expo Router is also provided by `expo-router` for file-based navigation and rout
 
 ## Screenshots
 
-### Staff sign-in
+### Register and order
 
 ![Frame 1](./Frame1.png)
 
-### Register and order
+### Staff sign-in
 
 ![Frame 2](./Frame2.png)
 
