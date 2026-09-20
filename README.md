@@ -1,5 +1,7 @@
 # Point of Sale
 
+DESIGNED FOR TABLET
+
 A responsive React Native point-of-sale app built with Expo SDK 57 and Expo Router. Staff can choose a profile, enter a PIN, search and filter the menu, build an order, adjust quantities, and complete payment with immediate on-screen feedback.
 
 
