@@ -1,5 +1,6 @@
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { colors, radii } from "@/constants/theme";
+import { AppIcon } from "@/components/AppIcon";
 
 const keys = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "clear", "0", "delete"];
 
@@ -20,7 +21,11 @@ export function PinPad({ pinLength, onKeyPress }: Props) {
             onPress={() => onKeyPress(key)}
             style={({ pressed }) => [styles.key, pressed && styles.keyPressed]}
           >
-            <Text style={[styles.keyText, key === "clear" && styles.utilityText]}>{key === "delete" ? "⌫" : key === "clear" ? "Clear" : key}</Text>
+            {key === "delete" ? (
+              <AppIcon name={{ ios: "delete.left", android: "backspace", web: "backspace" }} color={colors.ink} size={22} />
+            ) : (
+              <Text style={[styles.keyText, key === "clear" && styles.utilityText]}>{key === "clear" ? "Clear" : key}</Text>
+            )}
           </Pressable>
         ))}
       </View>

@@ -1,5 +1,6 @@
 import { Pressable, ScrollView, StyleSheet, Text } from "react-native";
 import { colors, radii } from "@/constants/theme";
+import { AppIcon } from "@/components/AppIcon";
 
 type Props = { categories: string[]; selected: string; horizontal?: boolean; onSelect: (category: string) => void };
 
@@ -11,7 +12,7 @@ export function CategoryRail({ categories, selected, horizontal = false, onSelec
         return (
           <Pressable key={category} onPress={() => onSelect(category)} style={({ pressed }) => [styles.button, active && styles.activeButton, pressed && styles.pressed]}>
             <Text style={[styles.text, active && styles.activeText]}>{category}</Text>
-            <Text style={[styles.chevron, active && styles.activeText]}>›</Text>
+            <AppIcon name={{ ios: "chevron.right", android: "chevron_right", web: "chevron_right" }} color={active ? colors.surface : colors.inkMuted} size={18} />
           </Pressable>
         );
       })}
@@ -26,6 +27,5 @@ const styles = StyleSheet.create({
   activeButton: { backgroundColor: colors.primary },
   text: { color: colors.inkMuted, fontSize: 15, fontWeight: "600" },
   activeText: { color: colors.surface },
-  chevron: { color: colors.inkMuted, fontSize: 22 },
   pressed: { opacity: 0.75 },
 });

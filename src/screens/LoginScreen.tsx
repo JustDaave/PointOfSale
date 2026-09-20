@@ -1,10 +1,11 @@
-import { useState } from "react";
-import { useRouter } from "expo-router";
-import { Pressable, ScrollView, StyleSheet, Text, useWindowDimensions, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { AppIcon } from "@/components/AppIcon";
 import { PinPad } from "@/components/login/PinPad";
 import { StaffSelector } from "@/components/login/StaffSelector";
 import { colors, radii } from "@/constants/theme";
+import { useRouter } from "expo-router";
+import { useState } from "react";
+import { Pressable, ScrollView, StyleSheet, Text, useWindowDimensions, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export function LoginScreen() {
   const router = useRouter();
@@ -23,8 +24,8 @@ export function LoginScreen() {
     <SafeAreaView style={styles.safeArea}>
       <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
         <View style={styles.brandRow}>
-          <View style={styles.logoMark}><Text style={styles.logoText}>N</Text></View>
-          <View><Text style={styles.brand}>Northstar</Text><Text style={styles.location}>Downtown · Register 01</Text></View>
+          <View style={styles.logoMark}><AppIcon name={{ ios: "storefront.fill", android: "storefront", web: "storefront" }} color={colors.surface} size={22} /></View>
+          <View><Text style={styles.brand}>Dave's Coffee Shop</Text><Text style={styles.location}>Downtown · Register 01</Text></View>
         </View>
         <View style={[styles.content, isCompact && styles.contentCompact]}>
           <View style={[styles.intro, isCompact && styles.introCompact]}>
@@ -40,10 +41,11 @@ export function LoginScreen() {
             <Pressable
               accessibilityRole="button"
               disabled={pin.length !== 4}
-              onPress={() => router.replace("/menu")}
+              onPress={() => router.replace({ pathname: "/menu", params: { staff: selectedStaff } })}
               style={({ pressed }) => [styles.continueButton, pin.length !== 4 && styles.continueDisabled, pressed && styles.continuePressed]}
             >
-              <Text style={styles.continueText}>Continue</Text><Text style={styles.arrow}>→</Text>
+              <Text style={styles.continueText}>Continue</Text>
+              <AppIcon name={{ ios: "arrow.right", android: "arrow_forward", web: "arrow_forward" }} color={colors.surface} size={19} />
             </Pressable>
           </View>
         </View>
@@ -58,7 +60,6 @@ const styles = StyleSheet.create({
   scrollContent: { flexGrow: 1, paddingHorizontal: 32, paddingVertical: 24 },
   brandRow: { flexDirection: "row", alignItems: "center", gap: 12 },
   logoMark: { width: 42, height: 42, borderRadius: 13, alignItems: "center", justifyContent: "center", backgroundColor: colors.primary },
-  logoText: { color: colors.surface, fontSize: 20, fontWeight: "800" },
   brand: { color: colors.ink, fontSize: 17, fontWeight: "800" },
   location: { color: colors.inkMuted, fontSize: 12, marginTop: 1 },
   content: { flex: 1, flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 72, paddingVertical: 30 },
@@ -75,6 +76,5 @@ const styles = StyleSheet.create({
   continueDisabled: { opacity: 0.35 },
   continuePressed: { opacity: 0.85 },
   continueText: { color: colors.surface, fontSize: 16, fontWeight: "700" },
-  arrow: { color: colors.surface, fontSize: 20 },
   footer: { color: colors.inkMuted, fontSize: 12 },
 });
