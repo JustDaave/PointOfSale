@@ -29,3 +29,16 @@ Expo Router is also provided by `expo-router` for file-based navigation and rout
 npm install
 npm start
 ```
+
+This starts the Expo development server in localhost mode for an emulator, simulator, or web browser running on the same computer.
+
+### Physical device
+
+To run the app in Expo Go on a separate phone or tablet, use tunnel mode:
+
+```bash
+npm install
+npm run start:tunnel
+```
+
+Keep the terminal running and scan the displayed QR code using Expo Go. Tunnel mode is recommended because school, public, or guest Wi-Fi may prevent devices from communicating directly. On a physical iPhone, sign in to the same Expo account in Expo Go and Expo CLI if prompted.

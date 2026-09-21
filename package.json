@@ -34,6 +34,7 @@
   },
   "scripts": {
     "start": "expo start --localhost",
+    "start:tunnel": "expo start --tunnel",
     "reset-project": "node ./scripts/reset-project.js",
     "android": "expo start --android --localhost",
     "ios": "expo start --ios --localhost",
