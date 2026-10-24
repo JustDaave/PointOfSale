@@ -4,6 +4,11 @@ DESIGNED FOR TABLET AND MOBILE
 
 A responsive React Native point-of-sale app built with Expo SDK 57 and Expo Router, styled with Material Design 3. Staff sign in with a PIN, build orders from the menu, and print a receipt at checkout. Customers can be added by scanning the barcode on their driver's license, which shows their age, ID validity, visits, and favorite products. Orders and customers are saved on the device, and the app has a light and dark theme.
 
+## How this app uses Material Design
+
+Throughout this app I implimented Googles material design system to make the point of sale visually appealing and usable. To start off I generated a full light and dark color scheme with googles material color tool. This allows dark mode to work through all my screens. The text sizes also follow the material type scale, such as the headline styles and label styles for buttons. The corner sizes in elements like the text fields and dialogs follow the Material corner radius scale. Icons on my app come from Material Symbols on Android and web.
+
+For the Layout of my app it switches between the phone and tablet layout at the Material breakpoints of 600 and 840 pixels. Also for components in my app I build a set of reusable Material components and used them throughout. This includes Buttons, segmented-buttons, chips, cards, text-fields, top-app-bar, snackbar, and more which Material Design provides the design system for. The most used component of those was Button which supports four Material design button styles, and filled buttons are for the main action on a screen.
 
 ## Extra Expo packages
 
