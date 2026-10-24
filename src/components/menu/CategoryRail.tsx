@@ -1,18 +1,29 @@
+import { shape, ThemeColors, type } from "@/constants/theme";
+import { useTheme } from "@/context/ThemeContext";
 import { Pressable, ScrollView, StyleSheet, Text } from "react-native";
-import { colors, radii } from "@/constants/theme";
-import { AppIcon } from "@/components/AppIcon";
 
-type Props = { categories: string[]; selected: string; horizontal?: boolean; onSelect: (category: string) => void };
+// Category list on the left side of the tablet layout.
+// Styled like the items in an M3 navigation drawer.
+type Props = { categories: string[]; selected: string; onSelect: (category: string) => void };
 
-export function CategoryRail({ categories, selected, horizontal = false, onSelect }: Props) {
+export function CategoryRail({ categories, selected, onSelect }: Props) {
+  const { colors } = useTheme();
+  const styles = createStyles(colors);
+
   return (
-    <ScrollView horizontal={horizontal} showsHorizontalScrollIndicator={false} contentContainerStyle={[styles.list, horizontal && styles.horizontal]}>
+    <ScrollView contentContainerStyle={styles.list} showsVerticalScrollIndicator={false}>
+      <Text style={styles.heading}>Categories</Text>
       {categories.map((category) => {
         const active = category === selected;
         return (
-          <Pressable key={category} onPress={() => onSelect(category)} style={({ pressed }) => [styles.button, active && styles.activeButton, pressed && styles.pressed]}>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityState={{ selected: active }}
+            key={category}
+            onPress={() => onSelect(category)}
+            style={({ pressed }) => [styles.item, active && styles.activeItem, pressed && styles.pressed]}
+          >
             <Text style={[styles.text, active && styles.activeText]}>{category}</Text>
-            <AppIcon name={{ ios: "chevron.right", android: "chevron_right", web: "chevron_right" }} color={active ? colors.surface : colors.inkMuted} size={18} />
           </Pressable>
         );
       })}
@@ -20,12 +31,14 @@ export function CategoryRail({ categories, selected, horizontal = false, onSelec
   );
 }
 
-const styles = StyleSheet.create({
-  list: { gap: 8, paddingVertical: 4 },
-  horizontal: { flexDirection: "row", paddingHorizontal: 20 },
-  button: { minWidth: 132, height: 48, paddingHorizontal: 14, borderRadius: radii.medium, flexDirection: "row", alignItems: "center", justifyContent: "space-between" },
-  activeButton: { backgroundColor: colors.primary },
-  text: { color: colors.inkMuted, fontSize: 15, fontWeight: "600" },
-  activeText: { color: colors.surface },
-  pressed: { opacity: 0.75 },
-});
+function createStyles(colors: ThemeColors) {
+  return StyleSheet.create({
+    list: { padding: 12, gap: 4 },
+    heading: { ...type.titleSmall, color: colors.onSurfaceVariant, paddingHorizontal: 16, paddingVertical: 12 },
+    item: { height: 56, paddingHorizontal: 16, justifyContent: "center", borderRadius: shape.full },
+    activeItem: { backgroundColor: colors.secondaryContainer },
+    pressed: { backgroundColor: colors.onSurface + "14" },
+    text: { ...type.labelLarge, color: colors.onSurfaceVariant },
+    activeText: { color: colors.onSecondaryContainer },
+  });
+}

@@ -1,25 +1,24 @@
+import { shape, ThemeColors, type } from "@/constants/theme";
+import { useTheme } from "@/context/ThemeContext";
+import { StaffMember } from "@/types/staff";
 import { Pressable, StyleSheet, Text, View } from "react-native";
-import { colors, radii } from "@/constants/theme";
 
-const staff = [
-  { name: "Alex", initials: "AM", role: "Manager" },
-  { name: "Jordan", initials: "JL", role: "Cashier" },
-  { name: "Taylor", initials: "TS", role: "Cashier" },
-];
+type Props = { staff: StaffMember[]; selectedId: string; onSelect: (id: string) => void };
 
-type Props = { selected: string; onSelect: (name: string) => void };
+export function StaffSelector({ staff, selectedId, onSelect }: Props) {
+  const { colors } = useTheme();
+  const styles = createStyles(colors);
 
-export function StaffSelector({ selected, onSelect }: Props) {
   return (
     <View style={styles.list}>
       {staff.map((person) => {
-        const isSelected = person.name === selected;
+        const isSelected = person.id === selectedId;
         return (
           <Pressable
             accessibilityRole="button"
             accessibilityState={{ selected: isSelected }}
-            key={person.name}
-            onPress={() => onSelect(person.name)}
+            key={person.id}
+            onPress={() => onSelect(person.id)}
             style={({ pressed }) => [styles.person, isSelected && styles.personSelected, pressed && styles.pressed]}
           >
             <View style={[styles.avatar, isSelected && styles.avatarSelected]}>
@@ -34,15 +33,32 @@ export function StaffSelector({ selected, onSelect }: Props) {
   );
 }
 
-const styles = StyleSheet.create({
-  list: { flexDirection: "row", gap: 12, flexWrap: "wrap" },
-  person: { minWidth: 112, padding: 14, borderRadius: radii.medium, borderWidth: 1, borderColor: colors.border, backgroundColor: colors.surface },
-  personSelected: { borderColor: colors.primary, backgroundColor: colors.primarySoft },
-  avatar: { width: 42, height: 42, borderRadius: 21, alignItems: "center", justifyContent: "center", marginBottom: 10, backgroundColor: colors.surfaceMuted },
-  avatarSelected: { backgroundColor: colors.primary },
-  initials: { color: colors.inkMuted, fontSize: 14, fontWeight: "700" },
-  initialsSelected: { color: colors.surface },
-  name: { color: colors.ink, fontSize: 15, fontWeight: "700" },
-  role: { color: colors.inkMuted, fontSize: 12, marginTop: 2 },
-  pressed: { opacity: 0.75 },
-});
+function createStyles(colors: ThemeColors) {
+  return StyleSheet.create({
+    list: { flexDirection: "row", gap: 12, flexWrap: "wrap" },
+    person: {
+      minWidth: 112,
+      padding: 16,
+      borderRadius: shape.medium,
+      borderWidth: 1,
+      borderColor: colors.outlineVariant,
+      backgroundColor: colors.surface,
+    },
+    personSelected: { borderColor: colors.secondaryContainer, backgroundColor: colors.secondaryContainer },
+    avatar: {
+      width: 40,
+      height: 40,
+      borderRadius: 20,
+      alignItems: "center",
+      justifyContent: "center",
+      marginBottom: 12,
+      backgroundColor: colors.surfaceContainerHighest,
+    },
+    avatarSelected: { backgroundColor: colors.primary },
+    initials: { ...type.titleSmall, color: colors.onSurfaceVariant },
+    initialsSelected: { color: colors.onPrimary },
+    name: { ...type.titleMedium, color: colors.onSurface },
+    role: { ...type.bodySmall, color: colors.onSurfaceVariant },
+    pressed: { opacity: 0.75 },
+  });
+}

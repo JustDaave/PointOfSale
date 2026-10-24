@@ -1,6 +1,6 @@
-import { CartLine } from "@/types/menu";
-
-const TAX_RATE = 0.0825;
+import { Order } from "@/types/order";
+import { formatMoney } from "@/utils/format";
+import { TAX_RATE } from "@/utils/orders";
 
 function escapeHtml(value: string) {
   return value.replace(/[&<>'"]/g, (character) => ({
@@ -12,16 +12,12 @@ function escapeHtml(value: string) {
   })[character] ?? character);
 }
 
-export function createReceiptHtml(lines: CartLine[], staffName: string) {
-  const subtotal = lines.reduce((sum, line) => sum + line.price * line.quantity, 0);
-  const tax = subtotal * TAX_RATE;
-  const total = subtotal + tax;
-  const orderNumber = Date.now().toString().slice(-6);
-  const printedAt = new Date().toLocaleString();
-  const items = lines.map((line) => `
+export function createReceiptHtml(order: Order) {
+  const printedAt = new Date(order.createdAt).toLocaleString();
+  const items = order.lines.map((line) => `
     <tr>
       <td><strong>${line.quantity} ×</strong> ${escapeHtml(line.name)}</td>
-      <td class="amount">$${(line.price * line.quantity).toFixed(2)}</td>
+      <td class="amount">${formatMoney(line.price * line.quantity)}</td>
     </tr>
   `).join("");
 
@@ -48,16 +44,16 @@ export function createReceiptHtml(lines: CartLine[], staffName: string) {
         <h1>Dave's Coffee Shop</h1>
         <div class="subtitle">Downtown · Register 01</div>
         <div class="details">
-          <p>Order #${orderNumber}</p>
+          <p>Order #${order.number}</p>
           <p>${escapeHtml(printedAt)}</p>
-          <p>Table 12 · Dine in · 2 guests</p>
-          <p>Served by ${escapeHtml(staffName)}</p>
+          <p>Customer: ${escapeHtml(order.customerName ?? "Walk-in")}</p>
+          <p>Served by ${escapeHtml(order.staffName)}</p>
         </div>
         <table><tbody>${items}</tbody></table>
         <table class="totals"><tbody>
-          <tr><td>Subtotal</td><td class="amount">$${subtotal.toFixed(2)}</td></tr>
-          <tr><td>Tax (8.25%)</td><td class="amount">$${tax.toFixed(2)}</td></tr>
-          <tr class="total"><td>Total</td><td class="amount">$${total.toFixed(2)}</td></tr>
+          <tr><td>Subtotal</td><td class="amount">${formatMoney(order.subtotal)}</td></tr>
+          <tr><td>Tax (${(TAX_RATE * 100).toFixed(2)}%)</td><td class="amount">${formatMoney(order.tax)}</td></tr>
+          <tr class="total"><td>Total</td><td class="amount">${formatMoney(order.total)}</td></tr>
         </tbody></table>
         <div class="thanks">Thank you for visiting!</div>
       </body>
