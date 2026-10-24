@@ -1,7 +1,7 @@
 import { ScannedId } from "@/types/customer";
 import { buildDate } from "@/utils/format";
 
-// US and Canadian driver's licenses have a PDF417 barcode on the back.
+// US and Canadian driver's licenses and state ID cards have a PDF417 barcode on the back.
 // The data follows the AAMVA standard: every field is on its own line and
 // starts with a 3 letter code. Example:
 //   DCSSMITH        <- last name
@@ -12,8 +12,9 @@ import { buildDate } from "@/utils/format";
 // https://www.aamva.org/identity/issuance-standards/cds-standard
 
 function readField(data: string, code: string) {
-  // A field starts at a new line, or right after "DL" for the very first field
-  const match = data.match(new RegExp(`(?:^|[\\n\\r]|DL)${code}([^\\n\\r]*)`));
+  // A field starts at a new line, or right after "DL" (driver's license)
+  // or "ID" (state ID card) for the very first field
+  const match = data.match(new RegExp(`(?:^|\\n|DL|ID)${code}([^\\n]*)`));
   return match ? match[1].trim() : "";
 }
 
@@ -36,8 +37,26 @@ function capitalize(name: string) {
     .join("");
 }
 
-export function parseDriversLicense(data: string): ScannedId | null {
-  if (!data.includes("ANSI") && !data.includes("AAMVA")) return null;
+// Barcode readers don't all return the line breaks between fields the same way
+// (line feed, carriage return, record separator...), so turn all of them into "\n"
+function normalize(rawData: string) {
+  return rawData.replace(/[\x00-\x1f\u0085\u2028\u2029]/g, "\n");
+}
+
+// For debugging a card that won't scan. Describes the barcode without
+// showing any personal info (no names, dates, or numbers).
+export function describeBarcode(rawData: string) {
+  // The standard header ("@ ANSI 636040...") only has the state code and version, never personal info
+  const header = rawData.startsWith("@") ? JSON.stringify(rawData.slice(0, 21)) : "none";
+  const controlChars = [...new Set(rawData.match(/[\x00-\x1f\u0085\u2028\u2029]/g) ?? [])]
+    .map((char) => "U+" + char.charCodeAt(0).toString(16).padStart(4, "0"))
+    .join(" ");
+  const fieldCodes = [...normalize(rawData).matchAll(/(?:^|\n|DL|ID)(D[A-D][A-Z])/g)].map((match) => match[1]);
+  return `length=${rawData.length} header=${header} lineBreaks=[${controlChars}] fields=[${fieldCodes.join(",")}]`;
+}
+
+export function parseDriversLicense(rawData: string): ScannedId | null {
+  const data = normalize(rawData);
 
   // Older cards use DCT for first name, and some only have the full name in DAA
   let firstName = readField(data, "DAC") || readField(data, "DCT");
@@ -53,7 +72,8 @@ export function parseDriversLicense(data: string): ScannedId | null {
   if (!firstName || !lastName || !birthDate || !expiryDate) return null;
 
   return {
-    firstName: capitalize(firstName.split(" ")[0]),
+    // Older cards put first and middle name together, like "JOHN,QUINCY" or "JOHN QUINCY"
+    firstName: capitalize(firstName.split(/[ ,]/)[0]),
     lastName: capitalize(lastName),
     birthDate,
     expiryDate,

@@ -11,9 +11,11 @@ import { ThemeColors, type } from "@/constants/theme";
 import { useTheme } from "@/context/ThemeContext";
 import { ScannedId } from "@/types/customer";
 import { saveScannedCustomer } from "@/utils/customers";
-import { parseDriversLicense } from "@/utils/idParser";
+import { describeBarcode, parseDriversLicense } from "@/utils/idParser";
+import { readBarcodesFromImage } from "@/utils/readBarcodes";
 import { BarcodeScanningResult, CameraView, useCameraPermissions } from "expo-camera";
 import * as Haptics from "expo-haptics";
+import * as ImagePicker from "expo-image-picker";
 import { useRouter } from "expo-router";
 import { useRef, useState } from "react";
 import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, View } from "react-native";
@@ -52,8 +54,21 @@ export function ScanScreen() {
     handlingScan.current = true;
     setBusy(true);
 
-    const scanned = parseDriversLicense(result.data);
+    let data = result.data;
+    // Chrome can find the barcode but give back empty text. When that happens,
+    // take a picture and read it again with the ZXing reader (see readBarcodes.web.ts)
+    if (!data && Platform.OS === "web") {
+      try {
+        const frame = await cameraRef.current?.takePictureAsync();
+        if (frame) [data = ""] = await readBarcodesFromImage(frame.uri);
+      } catch (error) {
+        console.warn("Could not re-read the barcode", error);
+      }
+    }
+
+    const scanned = parseDriversLicense(data);
     if (!scanned) {
+      console.log("Could not read ID barcode:", describeBarcode(data));
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
       setMessage("That barcode isn't from a driver's license. Try the barcode on the back of the ID.");
       // Wait a moment so the same barcode doesn't trigger again right away
@@ -79,6 +94,40 @@ export function ScanScreen() {
       await finish(scanned, "", photoUri);
     } catch {
       setMessage("Could not save the customer. Please try again.");
+      handlingScan.current = false;
+      setBusy(false);
+    }
+  }
+
+  // Laptop webcams are too low resolution to read the tiny barcode on an ID,
+  // so on web staff can upload a photo of the barcode taken with a phone instead
+  async function handleUploadPhoto() {
+    const picked = await ImagePicker.launchImageLibraryAsync({ mediaTypes: ["images"] });
+    if (picked.canceled) return;
+
+    handlingScan.current = true;
+    setBusy(true);
+    try {
+      const barcodes = await readBarcodesFromImage(picked.assets[0].uri);
+      const scanned = barcodes.length > 0 ? parseDriversLicense(barcodes[0]) : null;
+      if (!scanned) {
+        if (barcodes.length > 0) console.log("Could not read ID barcode:", describeBarcode(barcodes[0]));
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+        setMessage(
+          barcodes.length > 0
+            ? "That barcode isn't from a driver's license or ID."
+            : "Couldn't find a barcode in that photo. Try a closer, sharper photo of the back of the ID.",
+        );
+        handlingScan.current = false;
+        setBusy(false);
+        return;
+      }
+
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      // The uploaded image is only a temporary link in the browser, so it isn't saved as the ID photo
+      await finish(scanned, "", null);
+    } catch {
+      setMessage("Couldn't read that photo. Please try another one.");
       handlingScan.current = false;
       setBusy(false);
     }
@@ -136,7 +185,8 @@ export function ScanScreen() {
       <TopAppBar
         actions={
           mode === "camera" &&
-          permission?.granted && (
+          permission?.granted &&
+          Platform.OS !== "web" && (
             <IconButton
               icon={torchOn ? icons.flashOff : icons.flashOn}
               label={torchOn ? "Turn flashlight off" : "Turn flashlight on"}
@@ -159,7 +209,16 @@ export function ScanScreen() {
       </View>
 
       {mode === "camera" ? (
-        renderCamera()
+        <>
+          {renderCamera()}
+          {/* Reading barcodes from a photo only works for PDF417 on web (iOS only supports QR codes) */}
+          {Platform.OS === "web" && (
+            <View style={styles.uploadBar}>
+              <Text style={styles.uploadText}>Camera can't read it? Upload a clear photo of the barcode instead.</Text>
+              <Button disabled={busy} icon={icons.upload} label="Upload photo" onPress={handleUploadPhoto} variant="tonal" />
+            </View>
+          )}
+        </>
       ) : (
         <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : undefined} style={styles.flex}>
           <ScrollView keyboardShouldPersistTaps="handled">
@@ -167,7 +226,11 @@ export function ScanScreen() {
           </ScrollView>
         </KeyboardAvoidingView>
       )}
-      <Snackbar message={message} onDismiss={() => setMessage("")} />
+      <Snackbar
+        message={message}
+        onDismiss={() => setMessage("")}
+        style={Platform.OS === "web" && mode === "camera" ? styles.snackbarAboveUpload : undefined}
+      />
     </SafeAreaView>
   );
 }
@@ -181,5 +244,16 @@ function createStyles(colors: ThemeColors) {
     permission: { flex: 1, alignItems: "center", justifyContent: "center", gap: 16, padding: 32 },
     permissionTitle: { ...type.headlineSmall, color: colors.onSurface },
     permissionText: { ...type.bodyMedium, maxWidth: 420, color: colors.onSurfaceVariant, textAlign: "center" },
+    uploadBar: {
+      padding: 16,
+      flexDirection: "row",
+      flexWrap: "wrap",
+      alignItems: "center",
+      justifyContent: "center",
+      gap: 12,
+      backgroundColor: colors.surfaceContainer,
+    },
+    uploadText: { ...type.bodyMedium, color: colors.onSurfaceVariant },
+    snackbarAboveUpload: { bottom: 88 },
   });
 }

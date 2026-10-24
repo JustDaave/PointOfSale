@@ -35,6 +35,7 @@ export const icons = {
   send: { ios: "paperplane.fill", android: "send", web: "send" },
   signOut: { ios: "rectangle.portrait.and.arrow.right", android: "logout", web: "logout" },
   store: { ios: "storefront.fill", android: "storefront", web: "storefront" },
+  upload: { ios: "photo.on.rectangle", android: "upload", web: "upload" },
   valid: { ios: "checkmark.seal.fill", android: "verified", web: "verified" },
   warning: { ios: "exclamationmark.triangle.fill", android: "warning", web: "warning" },
 } satisfies Record<string, AppIconName>;

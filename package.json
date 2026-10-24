@@ -5,6 +5,7 @@
   "dependencies": {
     "@expo/ui": "~57.0.18",
     "@react-native-async-storage/async-storage": "2.2.0",
+    "barcode-detector": "3.2.3",
     "expo": "~57.0.23",
     "expo-camera": "~57.0.6",
     "expo-constants": "~57.0.18",
@@ -14,6 +15,7 @@
     "expo-glass-effect": "~57.0.3",
     "expo-haptics": "~57.0.3",
     "expo-image": "~57.0.5",
+    "expo-image-picker": "~57.0.20",
     "expo-linking": "~57.0.10",
     "expo-print": "~57.0.2",
     "expo-router": "~57.0.21",

@@ -13,6 +13,8 @@ A responsive React Native point-of-sale app built with Expo SDK 57 and Expo Rout
 - [`expo-camera`](https://docs.expo.dev/versions/v57.0.0/sdk/camera/) — scans the PDF417 barcode on the back of a driver's license and takes a photo of the ID.
 - [`@react-native-async-storage/async-storage`](https://docs.expo.dev/versions/v57.0.0/sdk/async-storage/) — saves orders, customers, and the theme setting on the device.
 - [`expo-file-system`](https://docs.expo.dev/versions/v57.0.0/sdk/filesystem/) — copies ID photos into the app's document folder so they are kept after a restart.
+- [`expo-image-picker`](https://docs.expo.dev/versions/v57.0.0/sdk/imagepicker/) — on web, lets staff upload a photo of an ID barcode when the laptop camera can't read it.
+- [`barcode-detector`](https://github.com/Sec-ant/barcode-detector) — ZXing barcode reader used on web, because Chrome's built-in reader can find an ID barcode but return empty text.
 - [`expo-haptics`](https://docs.expo.dev/versions/v57.0.0/sdk/haptics/) — vibration feedback when scanning an ID, adding items, and entering a wrong PIN.
 
 Expo Router is also provided by `expo-router` for file-based navigation, route parameters, and protected routes.
