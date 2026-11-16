@@ -3,7 +3,6 @@ import { OrderProvider } from "@/context/OrderContext";
 import { ThemeProvider, useTheme } from "@/context/ThemeContext";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import { SafeAreaProvider } from "react-native-safe-area-context";
 
 function AppStack() {
   const { staff } = useAuth();
@@ -34,14 +33,12 @@ function AppStack() {
 
 export default function RootLayout() {
   return (
-    <SafeAreaProvider>
-      <ThemeProvider>
-        <AuthProvider>
-          <OrderProvider>
-            <AppStack />
-          </OrderProvider>
-        </AuthProvider>
-      </ThemeProvider>
-    </SafeAreaProvider>
+    <ThemeProvider>
+      <AuthProvider>
+        <OrderProvider>
+          <AppStack />
+        </OrderProvider>
+      </AuthProvider>
+    </ThemeProvider>
   );
 }

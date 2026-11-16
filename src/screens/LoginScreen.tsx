@@ -1,3 +1,4 @@
+import { SafeAreaView } from "@/components/SafeArea";
 import { AppIcon } from "@/components/AppIcon";
 import { PinPad } from "@/components/login/PinPad";
 import { StaffSelector } from "@/components/login/StaffSelector";
@@ -12,7 +13,6 @@ import { staffMembers } from "@/data/staff";
 import * as Haptics from "expo-haptics";
 import { useEffect, useState } from "react";
 import { ScrollView, StyleSheet, Text, useWindowDimensions, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 
 function getClockText() {
   const now = new Date();

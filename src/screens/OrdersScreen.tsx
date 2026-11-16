@@ -1,3 +1,4 @@
+import { SafeAreaView } from "@/components/SafeArea";
 import { AppHeader } from "@/components/AppHeader";
 import { AppIcon } from "@/components/AppIcon";
 import { OrderCard } from "@/components/orders/OrderCard";
@@ -14,7 +15,6 @@ import { createReceiptHtml } from "@/utils/receipt";
 import * as Print from "expo-print";
 import { useState } from "react";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 
 // "Checks" page: every order saved on this device, newest first
 export function OrdersScreen() {

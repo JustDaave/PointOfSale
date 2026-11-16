@@ -1,3 +1,4 @@
+import { SafeAreaView } from "@/components/SafeArea";
 import { AppIcon } from "@/components/AppIcon";
 import { ManualEntryForm } from "@/components/scanner/ManualEntryForm";
 import { ScanOverlay } from "@/components/scanner/ScanOverlay";
@@ -19,7 +20,6 @@ import * as ImagePicker from "expo-image-picker";
 import { useRouter } from "expo-router";
 import { useRef, useState } from "react";
 import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 
 type Mode = "camera" | "manual";
 

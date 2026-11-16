@@ -1,3 +1,4 @@
+import { SafeAreaView } from "@/components/SafeArea";
 import { FavoritesSection } from "@/components/customer/FavoritesSection";
 import { IdPhoto } from "@/components/customer/IdPhoto";
 import { IdStatusBadges } from "@/components/customer/IdStatusBadges";
@@ -20,7 +21,6 @@ import { deleteCustomer, getCustomer, saveCustomer } from "@/utils/storage";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { ActivityIndicator, ScrollView, StyleSheet, Text, useWindowDimensions, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 
 // "Identification Results" screen from Frame 3
 export function CustomerScreen() {

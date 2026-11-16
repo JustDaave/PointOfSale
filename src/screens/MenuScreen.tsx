@@ -1,3 +1,4 @@
+import { SafeAreaView } from "@/components/SafeArea";
 import { AppHeader } from "@/components/AppHeader";
 import { CartPanel } from "@/components/menu/CartPanel";
 import { CategoryChips } from "@/components/menu/CategoryChips";
@@ -22,7 +23,6 @@ import * as Print from "expo-print";
 import { useFocusEffect } from "expo-router";
 import { useCallback, useState } from "react";
 import { StyleSheet, Text, useWindowDimensions, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 
 export function MenuScreen() {
   const { colors } = useTheme();

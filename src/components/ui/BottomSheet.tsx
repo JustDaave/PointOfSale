@@ -1,8 +1,8 @@
+import { useBottomSafeAreaPadding } from "@/components/SafeArea";
 import { shape, ThemeColors } from "@/constants/theme";
 import { useTheme } from "@/context/ThemeContext";
 import { ReactNode } from "react";
 import { Modal, Pressable, StyleSheet, View } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 // Material 3 modal bottom sheet https://m3.material.io/components/bottom-sheets
 type Props = {
@@ -14,13 +14,13 @@ type Props = {
 export function BottomSheet({ visible, onClose, children }: Props) {
   const { colors } = useTheme();
   const styles = createStyles(colors);
-  const insets = useSafeAreaInsets();
+  const bottomPadding = useBottomSafeAreaPadding();
 
   return (
     <Modal animationType="slide" onRequestClose={onClose} transparent visible={visible}>
       <View style={styles.container}>
         <Pressable accessibilityLabel="Close sheet" accessibilityRole="button" onPress={onClose} style={styles.scrim} />
-        <View style={[styles.sheet, { paddingBottom: insets.bottom }]}>
+        <View style={[styles.sheet, bottomPadding]}>
           <View style={styles.handle} />
           {children}
         </View>

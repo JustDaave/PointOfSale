@@ -1,10 +1,10 @@
+import { useBottomSafeAreaPadding } from "@/components/SafeArea";
 import { Button } from "@/components/ui/Button";
 import { icons } from "@/constants/icons";
 import { elevation, ThemeColors, type } from "@/constants/theme";
 import { useTheme } from "@/context/ThemeContext";
 import { formatMoney } from "@/utils/format";
 import { Pressable, StyleSheet, Text, View } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 // Bar at the bottom of the phone layout (Mobile mockup): "PAY $100.24 / 10 Items" + SEND.
 // Tapping the total opens the full order so items can be changed.
@@ -19,10 +19,10 @@ type Props = {
 export function OrderSummaryBar({ total, itemCount, sending, onOpenOrder, onSend }: Props) {
   const { colors } = useTheme();
   const styles = createStyles(colors);
-  const insets = useSafeAreaInsets();
+  const bottomPadding = useBottomSafeAreaPadding(12);
 
   return (
-    <View style={[styles.bar, { paddingBottom: 12 + insets.bottom }]}>
+    <View style={[styles.bar, bottomPadding]}>
       <Pressable
         accessibilityHint="Opens the current order"
         accessibilityRole="button"

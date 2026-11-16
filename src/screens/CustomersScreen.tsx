@@ -1,3 +1,4 @@
+import { SafeAreaView } from "@/components/SafeArea";
 import { AppHeader } from "@/components/AppHeader";
 import { AppIcon } from "@/components/AppIcon";
 import { CustomerListItem } from "@/components/customer/CustomerListItem";
@@ -12,7 +13,6 @@ import { loadCustomers } from "@/utils/storage";
 import { useFocusEffect, useRouter } from "expo-router";
 import { useCallback, useState } from "react";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 
 export function CustomersScreen() {
   const { colors } = useTheme();
